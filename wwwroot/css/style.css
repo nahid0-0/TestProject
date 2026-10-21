@@ -1,0 +1,767 @@
+/* ==========================================================================
+   MONOLITH 01 // ARCHITECTURAL CHESS TELEMETRY SYSTEM
+   Design Specification: Slate-Plate Dual Mood Architecture (Light Mood Only)
+   ========================================================================== */
+
+:root {
+  /* 2.1 Light Mood Color Palette & Token Matrix */
+  --canvas-bg: #EDF1F5;
+  --plate-surface: #FFFFFF;
+  --plate-header-bar: #C8DCE5;
+  --plate-header-border: #B6CCD9;
+  --plate-hairline-border: #D4E1E8;
+  --sunken-plate-bg: #EDF2F6;
+  --sunken-plate-border: #D0DBE4;
+  --info-banner-bg: #E6F4FA;
+  --info-banner-border: #BDE4F7;
+  
+  --primary-action: #0284C7;
+  --primary-action-hover: #0369A1;
+  --primary-action-active: #075985;
+  
+  --secondary-action: #F59E0B;
+  --secondary-action-hover: #D97706;
+  
+  --text-primary: #0F172A;
+  --text-primary-alt: #1E293B;
+  --text-secondary: #475569;
+  --text-secondary-alt: #5A6E7C;
+  --text-meta: #64748B;
+
+  /* Typographic Stacks */
+  --font-serif: "Times New Roman", Times, "Liberation Serif", serif;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+/* Reset & Edge-to-Edge Architectural Density (100vw presence) */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--canvas-bg);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Base Typographic Utility */
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+.font-sans {
+  font-family: var(--font-sans);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Container & Grids - Full Edge-to-Edge (w-full, max-w-none) */
+.monolith-viewport {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  border-left: none;
+  border-right: none;
+}
+
+/* Masthead / Top Institutional Bar */
+.masthead-bar {
+  background-color: var(--plate-surface);
+  border-bottom: 1px solid var(--plate-hairline-border);
+  padding: 10px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.masthead-brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.brand-badge {
+  background-color: var(--text-primary);
+  color: #FFFFFF;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  padding: 4px 8px;
+  border-radius: 2px;
+}
+
+.brand-title {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text-primary);
+}
+
+.brand-subtitle {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-meta);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.masthead-telemetry {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  background-color: var(--sunken-plate-bg);
+  border: 1px solid var(--sunken-plate-border);
+  border-radius: 2px;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #10B981;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+  animation: pulse-dot 2s infinite ease-in-out;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.85); }
+}
+
+/* Secondary Navigation & Jump Strip */
+.nav-hairline-strip {
+  background-color: #F8FAFC;
+  border-bottom: 1px solid var(--plate-hairline-border);
+  padding: 6px 24px;
+  display: flex;
+  gap: 24px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  overflow-x: auto;
+}
+
+.nav-hairline-strip a {
+  color: var(--text-secondary-alt);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.nav-hairline-strip a:hover {
+  color: var(--primary-action);
+}
+
+/* Hero & Architectural Telemetry Strip (4-column divide-x) */
+.telemetry-strip-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  width: 100%;
+  background-color: var(--plate-surface);
+  border-bottom: 1px solid var(--plate-hairline-border);
+}
+
+.telemetry-metric-cell {
+  padding: 24px 28px;
+  border-right: 1px solid var(--plate-hairline-border);
+  position: relative;
+}
+
+.telemetry-metric-cell:last-child {
+  border-right: none;
+}
+
+.metric-label-mono {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-meta);
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.metric-value-serif {
+  font-family: var(--font-serif);
+  font-size: 48px;
+  line-height: 1;
+  color: var(--text-primary);
+  font-weight: 400;
+  margin-bottom: 6px;
+  letter-spacing: -0.02em;
+}
+
+.metric-caption-sans {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* Plate Archetypes */
+
+/* Plate Archetype 1: Section & Table Header Cap Bar */
+.plate-header-cap {
+  background-color: var(--plate-header-bar);
+  border-bottom: 1px solid var(--plate-header-border);
+  color: var(--text-primary-alt);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.plate-header-title {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.plate-header-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 2px 6px;
+  background-color: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--plate-header-border);
+  border-radius: 2px;
+  color: var(--text-primary-alt);
+  letter-spacing: 0.1em;
+}
+
+/* Plate Container Surface */
+.plate-card {
+  background-color: var(--plate-surface);
+  border: 1px solid var(--plate-hairline-border);
+  border-radius: 2px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.plate-body {
+  padding: 20px 24px;
+}
+
+/* Plate Archetype 2: Recessed Data / Input Pill Box */
+.sunken-pill-box {
+  background-color: var(--sunken-plate-bg);
+  border: 1px solid var(--sunken-plate-border);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  padding: 6px 12px;
+  border-radius: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sunken-input {
+  background-color: var(--sunken-plate-bg);
+  border: 1px solid var(--sunken-plate-border);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: 8px 12px;
+  border-radius: 2px;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.sunken-input:focus {
+  border-color: var(--primary-action);
+  background-color: #FFFFFF;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15);
+}
+
+/* Plate Archetype 3: Information & Status Callout Banner */
+.info-callout-banner {
+  background-color: var(--info-banner-bg);
+  border: 1px solid var(--info-banner-border);
+  color: var(--primary-action);
+  padding: 12px 16px;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 14px 0;
+}
+
+.info-callout-icon {
+  font-weight: 700;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+/* Plate Archetype 5: Dual-Button Action Pair */
+.btn-action-pair {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.btn-primary-action {
+  background-color: var(--primary-action);
+  color: #FFFFFF;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  padding: 10px 24px;
+  border: 1px solid var(--primary-action);
+  border-radius: 2px;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-primary-action:hover {
+  background-color: var(--primary-action-hover);
+  border-color: var(--primary-action-hover);
+}
+
+.btn-primary-action:active {
+  background-color: var(--primary-action-active);
+}
+
+.btn-secondary-reset {
+  background-color: var(--secondary-action);
+  color: #FFFFFF;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  padding: 10px 18px;
+  border: 1px solid var(--secondary-action);
+  border-radius: 2px;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-secondary-reset:hover {
+  background-color: var(--secondary-action-hover);
+  border-color: var(--secondary-action-hover);
+}
+
+/* Two-Column Workbench Layout: 5-Col Controller + 7-Col CAD Window */
+.workbench-grid {
+  display: grid;
+  grid-template-columns: 5fr 7fr;
+  width: 100%;
+  border-bottom: 1px solid var(--plate-hairline-border);
+}
+
+.workbench-left {
+  border-right: 1px solid var(--plate-hairline-border);
+  background-color: var(--plate-surface);
+}
+
+.workbench-right {
+  background-color: #F8FAFC;
+}
+
+/* Preset Username Tags */
+.preset-tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+  margin-bottom: 14px;
+}
+
+.preset-chip {
+  background-color: var(--sunken-plate-bg);
+  border: 1px solid var(--sunken-plate-border);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.preset-chip:hover, .preset-chip.active {
+  background-color: var(--plate-header-bar);
+  border-color: var(--plate-header-border);
+  color: var(--text-primary);
+}
+
+/* Multi-select filter pills */
+.filter-pill-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+  margin-bottom: 14px;
+}
+
+.filter-pill {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 5px 12px;
+  background-color: var(--sunken-plate-bg);
+  border: 1px solid var(--sunken-plate-border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 2px;
+  user-select: none;
+  transition: all 0.15s ease;
+}
+
+.filter-pill.active {
+  background-color: #0284C7;
+  border-color: #0284C7;
+  color: #FFFFFF;
+}
+
+/* Plate Archetype 4: Interactive CAD / Blueprint Window */
+.cad-blueprint-container {
+  padding: 20px 24px;
+  position: relative;
+  background-color: #F8FAFC;
+  background-image: 
+    linear-gradient(to right, #CADDE8 1px, transparent 1px),
+    linear-gradient(to bottom, #CADDE8 1px, transparent 1px);
+  background-size: 24px 24px;
+  min-height: 480px;
+  display: flex;
+  flex-direction: column;
+}
+
+.cad-telemetry-overlay {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 8px 14px;
+  border: 1px solid var(--plate-hairline-border);
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.cad-board-wrapper {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.chessboard-plate {
+  width: 320px;
+  height: 320px;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  border: 2px solid var(--text-primary);
+  background-color: #FFFFFF;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.chess-square {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  position: relative;
+  user-select: none;
+}
+
+.chess-square.light {
+  background-color: #EDF2F6;
+}
+
+.chess-square.dark {
+  background-color: #B6CCD9;
+}
+
+.chess-square.highlight-from {
+  background-color: #FDE68A !important;
+}
+
+.chess-square.highlight-to {
+  background-color: #FBBF24 !important;
+}
+
+.chess-square.blunder-square::after {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #EF4444;
+  border: 2px solid #FFFFFF;
+  top: 4px;
+  right: 4px;
+}
+
+.cad-controls-panel {
+  flex: 1;
+  min-width: 240px;
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid var(--plate-hairline-border);
+  padding: 16px;
+  border-radius: 2px;
+}
+
+.cad-playback-btns {
+  display: flex;
+  gap: 6px;
+  margin: 12px 0;
+}
+
+.cad-btn {
+  background-color: var(--sunken-plate-bg);
+  border: 1px solid var(--sunken-plate-border);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 2px;
+  color: var(--text-primary);
+  transition: all 0.15s ease;
+}
+
+.cad-btn:hover {
+  background-color: var(--plate-header-bar);
+  border-color: var(--plate-header-border);
+}
+
+.cad-move-list {
+  max-height: 140px;
+  overflow-y: auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  border: 1px solid var(--sunken-plate-border);
+  background-color: var(--sunken-plate-bg);
+  padding: 8px;
+  border-radius: 2px;
+  line-height: 1.6;
+}
+
+/* High-Density Analytics Matrix (8-Plate Grid) */
+.analytics-matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  width: 100%;
+  border-bottom: 1px solid var(--plate-hairline-border);
+}
+
+.analytics-card-cell {
+  background-color: var(--plate-surface);
+  border-right: 1px solid var(--plate-hairline-border);
+  border-bottom: 1px solid var(--plate-hairline-border);
+  padding: 20px 24px;
+  position: relative;
+}
+
+.analytics-card-cell:nth-child(4n) {
+  border-right: none;
+}
+
+.analytics-card-title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-meta);
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.analytics-metric-large {
+  font-family: var(--font-serif);
+  font-size: 36px;
+  line-height: 1;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+/* Segmented progress bar */
+.split-progress-bar {
+  display: flex;
+  height: 8px;
+  width: 100%;
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 10px 0;
+  border: 1px solid var(--sunken-plate-border);
+}
+
+.split-bar-win {
+  background-color: #0284C7;
+}
+
+.split-bar-draw {
+  background-color: #94A3B8;
+}
+
+.split-bar-loss {
+  background-color: #EF4444;
+}
+
+/* Tabular Plate: Match Audit Trail */
+.registry-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  background-color: var(--plate-surface);
+  border-bottom: 1px solid var(--plate-hairline-border);
+}
+
+.registry-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  text-align: left;
+}
+
+.registry-table th {
+  background-color: #F8FAFC;
+  border-bottom: 1px solid var(--plate-hairline-border);
+  border-right: 1px solid var(--plate-hairline-border);
+  color: var(--text-secondary-alt);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 10px 16px;
+}
+
+.registry-table td {
+  border-bottom: 1px solid var(--plate-hairline-border);
+  border-right: 1px solid var(--plate-hairline-border);
+  padding: 10px 16px;
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+}
+
+.registry-table tr:hover td {
+  background-color: #F1F5F9;
+}
+
+.table-cell-mono {
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.badge-result {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 2px;
+  text-transform: uppercase;
+}
+
+.badge-win {
+  background-color: #DCFCE7;
+  color: #166534;
+  border: 1px solid #BBF7D0;
+}
+
+.badge-loss {
+  background-color: #FEE2E2;
+  color: #991B1B;
+  border: 1px solid #FECACA;
+}
+
+.badge-draw {
+  background-color: #F1F5F9;
+  color: #475569;
+  border: 1px solid #CBD5E1;
+}
+
+/* Institutional Footer */
+.institutional-footer {
+  background-color: var(--plate-surface);
+  border-top: 1px solid var(--plate-hairline-border);
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-meta);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .telemetry-strip-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .workbench-grid {
+    grid-template-columns: 1fr;
+  }
+  .workbench-left {
+    border-right: none;
+    border-bottom: 1px solid var(--plate-hairline-border);
+  }
+  .analytics-matrix-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .analytics-card-cell:nth-child(2n) {
+    border-right: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .telemetry-strip-grid {
+    grid-template-columns: 1fr;
+  }
+  .analytics-matrix-grid {
+    grid-template-columns: 1fr;
+  }
+  .analytics-card-cell {
+    border-right: none;
+  }
+  .chessboard-plate {
+    width: 280px;
+    height: 280px;
+  }
+}

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MONOLITH 01 // Architectural Chess Telemetry & Analytics</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="monolith-viewport">
+    
+    <!-- Masthead / Top Institutional Bar -->
+    <header class="masthead-bar">
+      <div class="masthead-brand">
+        <span class="brand-badge">SPEC // SLATE-PLATE</span>
+        <div>
+          <div class="brand-title">MONOLITH 01 // CHESS TELEMETRY & ANALYTICS</div>
+          <div class="brand-subtitle">Automated Lichess Ingestion • Trie Opening Classification • Performance Engine</div>
+        </div>
+      </div>
+      <div class="masthead-telemetry">
+        <div class="status-pill">
+          <span class="status-dot"></span>
+          <span>PIPELINE: ACTIVE</span>
+        </div>
+        <div class="status-pill">
+          <span>SPEC-ID: 77-BARTAZABLE-SLATE</span>
+        </div>
+        <div id="systemClock" class="font-mono">2026-10-21 00:00:00 UTC</div>
+      </div>
+    </header>
+
+    <!-- Secondary Navigation & Jump Strip -->
+    <nav class="nav-hairline-strip">
+      <a href="#telemetry-strip">[01 // TELEMETRY STRIP]</a>
+      <a href="#workbench">[02 // INGESTION & CAD BLUEPRINT]</a>
+      <a href="#analytics-matrix">[03 // MODULAR ANALYTICS SPECIFICATION]</a>
+      <a href="#match-registry">[04 // SERIAL REGISTRY AUDIT TRAIL]</a>
+    </nav>
+
+    <!-- 01 // Hero & Architectural Telemetry Strip (4-Column Full-Width Divide-X) -->
+    <section id="telemetry-strip" class="telemetry-strip-grid">
+      <div class="telemetry-metric-cell">
+        <div class="metric-label-mono">
+          <span>TOTAL GAMES AUDITED</span>
+          <span class="font-mono">METRIC-01</span>
+        </div>
+        <div id="totalGamesMetric" class="metric-value-serif">77</div>
+        <div class="metric-caption-sans">Ingested via streaming NDJSON pipeline</div>
+      </div>
+
+      <div class="telemetry-metric-cell">
+        <div class="metric-label-mono">
+          <span>PEAK OBSERVED RATING</span>
+          <span class="font-mono">METRIC-02</span>
+        </div>
+        <div id="peakRatingMetric" class="metric-value-serif">1417</div>
+        <div class="metric-caption-sans">Peak rating registered across time controls</div>
+      </div>
+
+      <div class="telemetry-metric-cell">
+        <div class="metric-label-mono">
+          <span>TRIE OPENING BRANCHES</span>
+          <span class="font-mono">METRIC-03</span>
+        </div>
+        <div id="trieOpeningsMetric" class="metric-value-serif">24</div>
+        <div class="metric-caption-sans">Identified ECO signatures in repertoire</div>
+      </div>
+
+      <div class="telemetry-metric-cell">
+        <div class="metric-label-mono">
+          <span>ACTIVE TILT INDEX</span>
+          <span class="font-mono">METRIC-04</span>
+        </div>
+        <div id="tiltIndexMetric" class="metric-value-serif">0.75</div>
+        <div class="metric-caption-sans">Session streak & speed variance coefficient</div>
+      </div>
+    </section>
+
+    <!-- 02 // Workbench: Ingestion Configurator (5-Col) + Interactive CAD Window (7-Col) -->
+    <section id="workbench" class="workbench-grid">
+      
+      <!-- Left Column: Ingestion Control & Filter Matrix -->
+      <div class="workbench-left">
+        <!-- Plate Archetype 1: Section Header Cap Bar -->
+        <div class="plate-header-cap">
+          <div class="plate-header-title">
+            <span>INGESTION CONTROL & FILTER MATRIX</span>
+            <span class="plate-header-badge">CONTROLLER 01</span>
+          </div>
+          <span class="font-mono" style="font-size:11px; color:var(--text-meta);">SPEC: LIGHT-SLATE</span>
+        </div>
+
+        <div class="plate-body">
+          <label class="font-mono" style="font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-meta); display:block; margin-bottom:6px;">
+            Target Lichess Account Username:
+          </label>
+          <input id="usernameInput" type="text" class="sunken-input" value="BARTAZABLE" spellcheck="false" placeholder="Enter Lichess username...">
+
+          <!-- Preset tags -->
+          <div class="preset-tags-list">
+            <span class="preset-chip active" data-username="BARTAZABLE">BARTAZABLE</span>
+            <span class="preset-chip" data-username="nahid5191">nahid5191</span>
+            <span class="preset-chip" data-username="MagnusCarlsen">MagnusCarlsen</span>
+            <span class="preset-chip" data-username="Hikaru">Hikaru</span>
+          </div>
+
+          <div style="margin: 16px 0;">
+            <label class="font-mono" style="font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-meta); display:block; margin-bottom:6px;">
+              Synchronization Mode:
+            </label>
+            <div style="display:flex; gap:16px;">
+              <label style="display:inline-flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:12px; cursor:pointer;">
+                <input type="radio" name="syncMode" value="backfill" checked> Backfill (Full History)
+              </label>
+              <label style="display:inline-flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:12px; cursor:pointer;">
+                <input type="radio" name="syncMode" value="incremental"> Incremental (Since Last Sync)
+              </label>
+            </div>
+          </div>
+
+          <div style="margin: 16px 0;">
+            <label class="font-mono" style="font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-meta); display:block; margin-bottom:6px;">
+              Speed & Time Control Filters:
+            </label>
+            <div class="filter-pill-group">
+              <span class="filter-pill active" data-filter="bullet">BULLET</span>
+              <span class="filter-pill active" data-filter="blitz">BLITZ</span>
+              <span class="filter-pill active" data-filter="rapid">RAPID</span>
+              <span class="filter-pill active" data-filter="classical">CLASSICAL</span>
+            </div>
+          </div>
+
+          <!-- Plate Archetype 3: Information & Status Callout Banner -->
+          <div class="info-callout-banner">
+            <span class="info-callout-icon">ℹ</span>
+            <div id="infoBannerText">
+              LICHESS STREAM CLIENT READY. SYSTEM ENFORCES POSTGRES ADVISORY LOCKS TO PREVENT CONCURRENT SYNC OVERLAPS.
+            </div>
+          </div>
+
+          <!-- Plate Archetype 5: Dual-Button Action Pair -->
+          <div class="btn-action-pair">
+            <button id="syncBtn" class="btn-primary-action">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+              </svg>
+              SYNC & ANALYZE USER
+            </button>
+            <button id="resetBtn" class="btn-secondary-reset">
+              RESET FILTERS
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Plate Archetype 4 (Interactive CAD / Blueprint Window) -->
+      <div class="workbench-right">
+        <!-- Plate Archetype 1: Section Header Cap Bar -->
+        <div class="plate-header-cap">
+          <div class="plate-header-title">
+            <span>INTERACTIVE CAD // TACTICAL BLUEPRINT & MOVE VECTOR REPLAY</span>
+            <span class="plate-header-badge">ARCHETYPE 04</span>
+          </div>
+          <span id="userDisplayBadge" class="plate-header-badge">BARTAZABLE</span>
+        </div>
+
+        <div class="cad-blueprint-container">
+          <!-- CAD Status Overlay -->
+          <div class="cad-telemetry-overlay">
+            <div id="cadMoveInfo">PLIES: 0 // START POSITION</div>
+            <div id="cadPhaseInfo">PHASE: OPENING // ECO: D00 Queen's Pawn Game</div>
+          </div>
+
+          <div class="cad-board-wrapper">
+            <!-- 8x8 Vector Chessboard Plate -->
+            <div id="chessboardGrid" class="chessboard-plate">
+              <!-- Dynamically rendered via app.js -->
+            </div>
+
+            <!-- CAD Controls & Vector Step Inspector -->
+            <div class="cad-controls-panel">
+              <label class="font-mono" style="font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-meta); display:block; margin-bottom:4px;">
+                Select Audited Game:
+              </label>
+              <select id="gameSelector" class="sunken-input" style="margin-bottom:12px;">
+                <!-- Populated dynamically -->
+              </select>
+
+              <label class="font-mono" style="font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-meta); display:block; margin-bottom:4px;">
+                Vector Playback Controls:
+              </label>
+              <div class="cad-playback-btns">
+                <button id="btnStart" class="cad-btn" title="First Move">|&lt;</button>
+                <button id="btnPrev" class="cad-btn" title="Previous Move">&lt;</button>
+                <button id="btnNext" class="cad-btn" title="Next Move">&gt;</button>
+                <button id="btnEnd" class="cad-btn" title="Last Move">&gt;|</button>
+              </div>
+
+              <label class="font-mono" style="font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-meta); display:block; margin-bottom:4px;">
+                Algebraic Move Stream:
+              </label>
+              <div id="cadMoveHistory" class="cad-move-list">
+                <!-- Move sequence -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- 03 // High-Density Modular Analytics Matrix (8-Plate Grid) -->
+    <section id="analytics-matrix">
+      <!-- Section Header Cap Bar -->
+      <div class="plate-header-cap">
+        <div class="plate-header-title">
+          <span>MODULAR ANALYTICS SPECIFICATION MATRIX</span>
+          <span class="plate-header-badge">8 MODULE SPECIFICATIONS</span>
+        </div>
+        <span class="font-mono" style="font-size:11px; color:var(--text-meta);">CACHE: IN-PROCESS CACHINGCALCULATOR</span>
+      </div>
+
+      <div class="analytics-matrix-grid">
+        
+        <!-- Module 1: Win / Loss / Draw -->
+        <div class="analytics-card-cell">
+          <div class="analytics-card-title">
+            <span>[01] WIN / LOSS RECORD</span>
+            <span>RATIO</span>
+          </div>
+          <div id="winLossLarge" class="analytics-metric-large">27.3%</div>
+          <div class="split-progress-bar">
+            <div id="splitWin" class="split-bar-win" style="width: 27.3%;"></div>
+            <div id="splitDraw" class="split-bar-draw" style="width: 2.6%;"></div>
+            <div id="splitLoss" class="split-bar-loss" style="width: 70.1%;"></div>
+          </div>
+          <div id="winLossSubtext" class="font-mono" style="font-size:11px; color:var(--text-secondary);">
+            21 Wins // 54 Losses // 2 Draws
+          </div>
+        </div>
+
+        <!-- Module 2: Rating Trajectory -->
+        <div class="analytics-card-cell">
+          <div class="analytics-card-title">
+            <span>[02] RATING TRAJECTORY</span>
+            <span>TIME CONTROLS</span>
+          </div>
+          <svg id="ratingTrendSvg" width="100%" height="60" viewBox="0 0 240 60" style="margin-bottom:6px;"></svg>
+          <div id="ratingTrendSummary" class="font-mono" style="font-size:11px; color:var(--text-secondary);">
+            Classical: 1281 // Rapid: 1154
+          </div>
+        </div>
+
+        <!-- Module 3: Opening Performance -->
+        <div class="analytics-card-cell">
+          <div class="analytics-card-title">
+            <span>[03] OPENING PERFORMANCE</span>
+            <span>ECO TRIE</span>
+          </div>
+          <table style="width:100%; font-size:11px; border-collapse:collapse;">
+            <tbody id="openingsTableBody">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Module 4: Time Management -->
+        <div class="analytics-card-cell">
+          <div class="analytics-card-title">
+            <span>[04] TIME MANAGEMENT</span>
+            <span>CLOCK TELEMETRY</span>
+          </div>
+          <div id="timeMgmtLarge" class="analytics-metric-large">3.8s</div>
+          <div id="timeMgmtSub" class="font-mono" style="font-size:11px; color:var(--text-secondary); line-height:1.4;">
+            18 Timeout Losses // Scramble rate: 23.4%
+          </div>
+        </div>
+
+        <!-- Module 5: Move Accuracy & ACPL -->
+        <div class="analytics-card-cell">
+          <div class="analytics-card-title">
+            <span>[05] ACCURACY SPECIFICATION</span>
+            <span>CENTIPAWN</span>
+          </div>
+          <div id="accuracyLarge" class="analytics-metric-large">35.0 ACPL</div>
+          <div id="accuracySub" class="font-mono" style="font-size:11px; color:var(--text-secondary); line-height:1.4;">
+            Blunders: 4.2% // Mistakes: 8.5% // Inaccuracies: 12.1%
+          </div>
+        </div>
+
+        <!-- Module 6: Phase Strength -->
+        <div class="analytics-card-cell">
+          <div class="analytics-card-title">
+            <span>[06] PHASE STRENGTH</span>
+            <span>DISTRIBUTION</span>
+          </div>
+          <div id="phaseBars" style="padding-top:4px;">
+            <!-- Phase bars -->
+          </div>
+        </div>
+
+        <!-- Module 7: Streak & Tilt Engine -->
+        <div class="analytics-card-cell">
+          <div class="analytics-card-title">
+            <span>[07] STREAK & TILT ENGINE</span>
+            <span>TELEMETRY</span>
+          </div>
+          <div id="streakTiltLarge" class="analytics-metric-large" style="color:#EF4444;">Tilt: 0.75</div>
+          <div id="streakTiltSub" class="font-mono" style="font-size:11px; color:var(--text-secondary); line-height:1.4;">
+            Max Win Streak: 3 // Max Loss Streak: 7 // Alert Active
+          </div>
+        </div>
+
+        <!-- Module 8: Tactical Weakness Report -->
+        <div class="analytics-card-cell">
+          <div class="analytics-card-title">
+            <span>[08] WEAKNESS AUDIT</span>
+            <span>DIAGNOSTICS</span>
+          </div>
+          <ul id="weaknessList" class="font-sans" style="font-size:11px; color:var(--text-secondary); list-style:none;">
+            <!-- Weaknesses -->
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 04 // Serial Registry: Streamed Match Audit Trail -->
+    <section id="match-registry">
+      <div class="plate-header-cap">
+        <div class="plate-header-title">
+          <span>SERIAL REGISTRY // STREAMED MATCH AUDIT TRAIL</span>
+          <span class="plate-header-badge">AUDIT LOG</span>
+        </div>
+        <span class="font-mono" style="font-size:11px; color:var(--text-meta);">FORMAT: STREAMED NDJSON</span>
+      </div>
+
+      <div class="registry-table-wrapper">
+        <table class="registry-table">
+          <thead>
+            <tr>
+              <th>MATCH ID</th>
+              <th>OPPONENT & RATING</th>
+              <th>PLAYER COLOR</th>
+              <th>OPENING & ECO SPEC</th>
+              <th>PLIES</th>
+              <th>RESULT & TERMINATION</th>
+              <th>DATE STAMP</th>
+              <th>CAD INSPECTOR</th>
+            </tr>
+          </thead>
+          <tbody id="gamesAuditTableBody">
+            <!-- Populated dynamically via app.js -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Institutional Footer -->
+    <footer class="institutional-footer">
+      <div>
+        <strong>MONOLITH 01 // ARCHITECTURAL CHESS ENGINE</strong> — SPECIFICATION SLATE-PLATE DUAL MOOD (LIGHT MOOD EDITION)
+      </div>
+      <div>
+        <span>ASP.NET CORE 9 • CLEAN ARCHITECTURE • DDD • EF CORE • LICHESS OPEN API COMPLIANT</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
