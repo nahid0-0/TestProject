@@ -4,6 +4,12 @@ using Chess.Api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Avoid macOS Control Center / AirPlay Receiver conflict on port 5000
+if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ASPNETCORE_URLS")))
+{
+    builder.WebHost.UseUrls("http://localhost:5100");
+}
+
 // Add Chess services
 builder.Services.AddChess(builder.Configuration);
 
