@@ -487,15 +487,15 @@ html, body {
 }
 
 .chessboard-plate {
-  width: 320px;
-  height: 320px;
+  width: 360px;
+  height: 360px;
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(8, 1fr);
   border: 2px solid var(--text-primary);
   background-color: #FFFFFF;
   position: relative;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .chess-square {
@@ -504,7 +504,6 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
   position: relative;
   user-select: none;
 }
@@ -514,7 +513,7 @@ html, body {
 }
 
 .chess-square.dark {
-  background-color: #B6CCD9;
+  background-color: #8FA9BA;
 }
 
 .chess-square.highlight-from {
@@ -522,7 +521,37 @@ html, body {
 }
 
 .chess-square.highlight-to {
-  background-color: #FBBF24 !important;
+  background-color: #F59E0B !important;
+}
+
+.chess-square-coord {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  pointer-events: none;
+  opacity: 0.65;
+}
+
+.chess-square-coord.rank {
+  top: 2px;
+  left: 3px;
+}
+
+.chess-square-coord.file {
+  bottom: 2px;
+  right: 3px;
+}
+
+.chess-piece-img {
+  width: 86%;
+  height: 86%;
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 4px rgba(15, 23, 42, 0.35));
+  transition: transform 0.1s ease;
+  user-select: none;
 }
 
 .chess-square.blunder-square::after {
@@ -535,6 +564,29 @@ html, body {
   border: 2px solid #FFFFFF;
   top: 4px;
   right: 4px;
+}
+
+.move-token {
+  display: inline-block;
+  padding: 2px 5px;
+  border-radius: 2px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  margin: 1px 2px;
+  color: var(--text-primary);
+  user-select: none;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.move-token:hover {
+  background-color: #C8DCE5;
+}
+
+.move-token.active-move {
+  background-color: #0284C7;
+  color: #FFFFFF !important;
+  font-weight: 700;
 }
 
 .cad-controls-panel {

@@ -1,12 +1,13 @@
 /**
  * MONOLITH 01 // ARCHITECTURAL CHESS TELEMETRY & ANALYTICS
  * Implementation: Slate-Plate Dual Mood Architecture (Light Mood Only)
+ * Powered by chess.js engine and high-fidelity SVG pieces.
  */
 
 (function () {
   'use strict';
 
-  // State Management
+  // Global State
   const state = {
     username: 'BARTAZABLE',
     syncMode: 'backfill',
@@ -16,27 +17,8 @@
     selectedGame: null,
     currentMoveIndex: 0,
     parsedMoves: [],
-    boardState: createInitialBoard()
+    positions: [] // Precomputed { fen, board, lastMove, san, ply }
   };
-
-  // Unicode Chess Pieces
-  const PIECES = {
-    'K': '♔', 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘', 'P': '♙',
-    'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟'
-  };
-
-  function createInitialBoard() {
-    return [
-      ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
-      ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
-      ['.', '.', '.', '.', '.', '.', '.', '.'],
-      ['.', '.', '.', '.', '.', '.', '.', '.'],
-      ['.', '.', '.', '.', '.', '.', '.', '.'],
-      ['.', '.', '.', '.', '.', '.', '.', '.'],
-      ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-      ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']
-    ];
-  }
 
   // DOM Elements
   const el = {
@@ -90,8 +72,19 @@
   setInterval(updateClock, 1000);
   updateClock();
 
-  // Render Chessboard
-  function renderBoard(highlightSquares = {}) {
+  // Clean moves string
+  function sanitizeMoves(movesStr) {
+    if (!movesStr) return [];
+    // Remove PGN annotations { ... }, comments, evaluations
+    const clean = movesStr.replace(/\{[^}]*\}/g, '').replace(/\([^)]*\)/g, '');
+    const tokens = clean.split(/\s+/).filter(Boolean);
+    return tokens
+      .filter(t => !/^\d+(\.+)?$/.test(t) && !/^(1-0|0-1|1\/2-1\/2|\*)$/.test(t))
+      .map(t => t.replace(/0-0-0/g, 'O-O-O').replace(/0-0/g, 'O-O'));
+  }
+
+  // Render Chessboard using official crisp SVG vector pieces
+  function renderBoard(boardMatrix, highlight = {}) {
     if (!el.chessboardGrid) return;
     el.chessboardGrid.innerHTML = '';
 
@@ -104,22 +97,42 @@
         const fileChar = String.fromCharCode(97 + c);
         const rankNum = 8 - r;
         const squareCoord = `${fileChar}${rankNum}`;
+        sq.dataset.square = squareCoord;
 
-        if (highlightSquares.from === squareCoord) {
+        // Coordinate labels
+        if (c === 0) {
+          const rankLabel = document.createElement('span');
+          rankLabel.className = 'chess-square-coord rank';
+          rankLabel.style.color = isDark ? '#FFFFFF' : '#475569';
+          rankLabel.textContent = rankNum;
+          sq.appendChild(rankLabel);
+        }
+        if (r === 7) {
+          const fileLabel = document.createElement('span');
+          fileLabel.className = 'chess-square-coord file';
+          fileLabel.style.color = isDark ? '#FFFFFF' : '#475569';
+          fileLabel.textContent = fileChar;
+          sq.appendChild(fileLabel);
+        }
+
+        // Highlights for moved piece
+        if (highlight.from === squareCoord) {
           sq.classList.add('highlight-from');
         }
-        if (highlightSquares.to === squareCoord) {
+        if (highlight.to === squareCoord) {
           sq.classList.add('highlight-to');
         }
-        if (highlightSquares.blunder === squareCoord) {
-          sq.classList.add('blunder-square');
-        }
 
-        const piece = state.boardState[r][c];
-        if (piece && piece !== '.') {
-          sq.textContent = PIECES[piece] || piece;
-          sq.style.color = (piece === piece.toUpperCase()) ? '#0F172A' : '#334155';
-          sq.style.fontWeight = 'bold';
+        // Render piece SVG if square is occupied
+        const piece = boardMatrix && boardMatrix[r] ? boardMatrix[r][c] : null;
+        if (piece) {
+          const pieceKey = `${piece.color}${piece.type.toUpperCase()}`;
+          const img = document.createElement('img');
+          img.src = `img/pieces/${pieceKey}.svg`;
+          img.className = 'chess-piece-img';
+          img.alt = `${piece.color === 'w' ? 'White' : 'Black'} ${piece.type.toUpperCase()}`;
+          img.draggable = false;
+          sq.appendChild(img);
         }
 
         el.chessboardGrid.appendChild(sq);
@@ -127,102 +140,161 @@
     }
   }
 
-  // Parse moves from PGN / Lichess move text
-  function parseGameMoves(movesString) {
-    if (!movesString) return [];
-    return movesString.trim().split(/\s+/).filter(Boolean);
-  }
+  // Precompute game positions with chess.js
+  function loadGamePositions(game) {
+    state.positions = [];
+    const engine = typeof Chess === 'function' ? new Chess() : null;
 
-  // Simple move simulator for CAD view
-  function resetAndPlayUpTo(targetIndex) {
-    state.boardState = createInitialBoard();
-    const moves = state.parsedMoves;
-    let lastFrom = null;
-    let lastTo = null;
-
-    // Simulation of initial basic algebraic coordinates for visual demonstration
-    for (let i = 0; i < targetIndex && i < moves.length; i++) {
-      const move = moves[i];
-      const isWhite = i % 2 === 0;
-
-      // Handle simple pawn & piece moves
-      if (move === 'e4') {
-        movePiece('e2', 'e4');
-        lastFrom = 'e2'; lastTo = 'e4';
-      } else if (move === 'e5') {
-        movePiece('e7', 'e5');
-        lastFrom = 'e7'; lastTo = 'e5';
-      } else if (move === 'd4') {
-        movePiece('d2', 'd4');
-        lastFrom = 'd2'; lastTo = 'd4';
-      } else if (move === 'd5') {
-        movePiece('d7', 'd5');
-        lastFrom = 'd7'; lastTo = 'd5';
-      } else if (move === 'Nf3') {
-        movePiece('g1', 'f3');
-        lastFrom = 'g1'; lastTo = 'f3';
-      } else if (move === 'Nc6') {
-        movePiece('b8', 'c6');
-        lastFrom = 'b8'; lastTo = 'c6';
-      } else if (move === 'a3') {
-        movePiece('a2', 'a3');
-        lastFrom = 'a2'; lastTo = 'a3';
-      } else if (move === 'e6') {
-        movePiece('e7', 'e6');
-        lastFrom = 'e7'; lastTo = 'e6';
-      } else if (move === 'a4') {
-        movePiece('a3', 'a4');
-        lastFrom = 'a3'; lastTo = 'a4';
-      } else if (move === 'c4') {
-        movePiece('c2', 'c4');
-        lastFrom = 'c2'; lastTo = 'c4';
-      } else if (move === 'c6') {
-        movePiece('c7', 'c6');
-        lastFrom = 'c7'; lastTo = 'c6';
-      } else if (move === 'g3') {
-        movePiece('g2', 'g3');
-        lastFrom = 'g2'; lastTo = 'g3';
-      } else if (move === 'g6') {
-        movePiece('g7', 'g6');
-        lastFrom = 'g7'; lastTo = 'g6';
-      }
+    if (!engine) {
+      console.warn('chess.js engine not loaded.');
+      return;
     }
 
-    state.currentMoveIndex = targetIndex;
-    renderBoard({ from: lastFrom, to: lastTo });
+    // Step 0: Starting position
+    state.positions.push({
+      fen: engine.fen(),
+      board: engine.board(),
+      lastMove: null,
+      san: 'START',
+      ply: 0
+    });
 
+    const moves = sanitizeMoves(game.moves || '');
+    state.parsedMoves = moves;
+
+    for (let i = 0; i < moves.length; i++) {
+      const moveStr = moves[i];
+      let res = engine.move(moveStr, { sloppy: true });
+
+      // Fallback: If move contains check indicator or formatting difference
+      if (!res && moveStr.endsWith('+')) {
+        res = engine.move(moveStr.slice(0, -1), { sloppy: true });
+      }
+      if (!res && moveStr.endsWith('#')) {
+        res = engine.move(moveStr.slice(0, -1), { sloppy: true });
+      }
+
+      if (res) {
+        state.positions.push({
+          fen: engine.fen(),
+          board: engine.board(),
+          lastMove: {
+            from: res.from,
+            to: res.to,
+            san: res.san,
+            color: res.color
+          },
+          san: res.san,
+          ply: state.positions.length
+        });
+      } else {
+        // If an exotic variant or illegal move was encountered, stop smoothly
+        console.warn(`Move ${i + 1} (${moveStr}) could not be played in standard rules.`);
+        break;
+      }
+    }
+  }
+
+  // Jump to specific ply
+  function goToPly(plyIndex) {
+    if (state.positions.length === 0) return;
+    const clamped = Math.max(0, Math.min(plyIndex, state.positions.length - 1));
+    state.currentMoveIndex = clamped;
+    const pos = state.positions[clamped];
+
+    renderBoard(pos.board, pos.lastMove || {});
+
+    // Update telemetry readouts
     if (el.cadMoveInfo) {
-      if (targetIndex === 0) {
+      if (clamped === 0) {
         el.cadMoveInfo.textContent = 'PLIES: 0 // START POSITION';
       } else {
-        const mv = moves[targetIndex - 1];
-        const player = (targetIndex % 2 === 1) ? 'WHITE' : 'BLACK';
-        el.cadMoveInfo.textContent = `PLY ${targetIndex} // ${player} PLAYED ${mv}`;
+        const m = pos.lastMove;
+        const colorName = m.color === 'w' ? 'WHITE' : 'BLACK';
+        el.cadMoveInfo.textContent = `PLY ${clamped} // ${colorName} PLAYED ${m.san}`;
       }
     }
 
     if (el.cadPhaseInfo && state.selectedGame) {
-      const opening = state.selectedGame.opening?.name || "Queen's Pawn Game";
-      const phase = targetIndex < 16 ? 'OPENING' : targetIndex < 40 ? 'MIDDLEGAME' : 'ENDGAME';
-      el.cadPhaseInfo.textContent = `PHASE: ${phase} // ECO: ${state.selectedGame.opening?.eco || 'D00'} ${opening}`;
+      const phase = clamped < 16 ? 'OPENING' : clamped < 40 ? 'MIDDLEGAME' : 'ENDGAME';
+      const eco = state.selectedGame.opening?.eco || 'D00';
+      const openingName = state.selectedGame.opening?.name || "Queen's Pawn Game";
+      el.cadPhaseInfo.textContent = `PHASE: ${phase} // ECO: ${eco} ${openingName}`;
+    }
+
+    // Highlight active token in move stream
+    const tokens = document.querySelectorAll('.move-token');
+    tokens.forEach((tok, idx) => {
+      if (idx + 1 === clamped) {
+        tok.classList.add('active-move');
+        tok.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+      } else {
+        tok.classList.remove('active-move');
+      }
+    });
+  }
+  window.goToPly = goToPly;
+
+  // Render move stream with clickable tokens
+  function renderMoveList() {
+    if (!el.cadMoveHistory) return;
+    if (state.positions.length <= 1) {
+      el.cadMoveHistory.innerHTML = '<span style="color:#64748B;">No move records available for this game.</span>';
+      return;
+    }
+
+    let html = '';
+    for (let i = 1; i < state.positions.length; i++) {
+      const pos = state.positions[i];
+      const isWhite = (i % 2 === 1);
+      const moveNumber = Math.ceil(i / 2);
+
+      if (isWhite) {
+        html += `<span style="color:#64748B; font-weight:600; margin-left:4px;">${moveNumber}.</span> `;
+      }
+      html += `<span class="move-token" onclick="window.goToPly(${i})">${pos.san}</span> `;
+    }
+
+    el.cadMoveHistory.innerHTML = html;
+  }
+
+  // Inspect selected game
+  window.inspectGame = function (gameId) {
+    const game = state.games.find(g => g.id === gameId);
+    if (!game) return;
+    state.selectedGame = game;
+
+    if (el.gameSelector && el.gameSelector.value !== gameId) {
+      el.gameSelector.value = gameId;
+    }
+
+    // Load full move positions
+    loadGamePositions(game);
+    renderMoveList();
+
+    // Start at end of game or first move
+    goToPly(state.positions.length - 1);
+  };
+
+  // Populate CAD game dropdown
+  function populateGameSelector(games) {
+    if (!el.gameSelector) return;
+    el.gameSelector.innerHTML = games.map((g, idx) => {
+      const whiteName = g.players?.white?.user?.name || 'Anonymous';
+      const blackName = g.players?.black?.user?.name || 'Anonymous';
+      const isWhite = whiteName.toLowerCase() === state.username.toLowerCase();
+      const opp = isWhite ? blackName : whiteName;
+      const opening = g.opening?.name || "Queen's Pawn Game";
+      const eco = g.opening?.eco || "D00";
+      return `<option value="${g.id}">Game #${idx + 1}: vs ${opp} [${eco}] (${g.speed})</option>`;
+    }).join('');
+
+    if (games.length > 0) {
+      window.inspectGame(games[0].id);
     }
   }
 
-  function movePiece(fromSq, toSq) {
-    const fromCol = fromSq.charCodeAt(0) - 97;
-    const fromRow = 8 - parseInt(fromSq[1], 10);
-    const toCol = toSq.charCodeAt(0) - 97;
-    const toRow = 8 - parseInt(toSq[1], 10);
-
-    if (fromRow >= 0 && fromRow < 8 && fromCol >= 0 && fromCol < 8 &&
-        toRow >= 0 && toRow < 8 && toCol >= 0 && toCol < 8) {
-      const piece = state.boardState[fromRow][fromCol];
-      state.boardState[fromRow][fromCol] = '.';
-      state.boardState[toRow][toCol] = piece;
-    }
-  }
-
-  // Fetch Live Data
+  // Fetch Live Data from Lichess
   async function fetchChessData(username) {
     el.syncBtn.disabled = true;
     el.syncBtn.innerHTML = 'STREAMING TELEMETRY...';
@@ -241,9 +313,9 @@
       }
       state.profile = await profRes.json();
 
-      // 2. Fetch Recent Streamed Games (NDJSON)
+      // 2. Fetch Recent Games with standard rating pools
       const gamesRes = await fetch(
-        `https://lichess.org/api/games/user/${encodeURIComponent(username)}?max=30&moves=true&opening=true`,
+        `https://lichess.org/api/games/user/${encodeURIComponent(username)}?max=30&moves=true&opening=true&perf=bullet,blitz,rapid,classical`,
         { headers: { 'Accept': 'application/x-ndjson' } }
       );
 
@@ -257,14 +329,13 @@
         })
         .filter(Boolean);
 
-      // Render UI with fetched live telemetry
       applyDataToUI();
 
       if (el.infoBannerText) {
         el.infoBannerText.textContent = `SUCCESS // INGESTION COMPLETE FOR [${username.toUpperCase()}]. ${state.games.length} GAMES PARSED THROUGH TRIE & CLASSIFIER PIPELINE.`;
       }
     } catch (err) {
-      console.warn('API error, using fallback telemetry:', err);
+      console.warn('API fetch warning:', err);
       if (el.infoBannerText) {
         el.infoBannerText.textContent = `NOTICE // ${err.message}. DISPLAYING TELEMETRY CACHE.`;
       }
@@ -302,11 +373,9 @@
     }
     if (el.peakRatingMetric) el.peakRatingMetric.textContent = peakRating;
 
-    // Unique openings count
     const uniqueOpenings = new Set(games.map(g => g.opening?.name).filter(Boolean));
     if (el.trieOpeningsMetric) el.trieOpeningsMetric.textContent = uniqueOpenings.size || 24;
 
-    // Tilt Index computation
     const tiltIndex = lossCount > winCount * 2 ? '0.75' : '0.20';
     if (el.tiltIndexMetric) el.tiltIndexMetric.textContent = tiltIndex;
 
@@ -502,39 +571,7 @@
     }).join('');
   }
 
-  function populateGameSelector(games) {
-    if (!el.gameSelector) return;
-    el.gameSelector.innerHTML = games.map((g, idx) => {
-      const opp = (g.players?.white?.user?.name?.toLowerCase() === state.username.toLowerCase())
-        ? g.players?.black?.user?.name
-        : g.players?.white?.user?.name;
-      return `<option value="${g.id}">Game #${idx + 1}: vs ${opp || 'Opponent'} (${g.opening?.eco || 'D00'})</option>`;
-    }).join('');
-
-    if (games.length > 0) {
-      window.inspectGame(games[0].id);
-    }
-  }
-
-  // Global Inspector for CAD Board
-  window.inspectGame = function (gameId) {
-    const game = state.games.find(g => g.id === gameId);
-    if (!game) return;
-    state.selectedGame = game;
-    state.parsedMoves = parseGameMoves(game.moves || 'd4 d5 a3 e6 a4');
-
-    if (el.gameSelector) el.gameSelector.value = gameId;
-
-    if (el.cadMoveHistory) {
-      el.cadMoveHistory.innerHTML = state.parsedMoves.map((m, i) => {
-        return `<span style="display:inline-block; margin-right:8px; ${i % 2 === 0 ? 'font-weight:600;' : ''}">${Math.floor(i / 2) + 1}${i % 2 === 0 ? '.' : '...'} ${m}</span>`;
-      }).join('');
-    }
-
-    resetAndPlayUpTo(state.parsedMoves.length);
-  };
-
-  // Event Handlers
+  // Event Listeners
   if (el.syncBtn) {
     el.syncBtn.addEventListener('click', () => {
       const u = el.usernameInput.value.trim();
@@ -585,14 +622,23 @@
     });
   }
 
-  // Playback Buttons
-  if (el.btnStart) el.btnStart.addEventListener('click', () => resetAndPlayUpTo(0));
-  if (el.btnPrev) el.btnPrev.addEventListener('click', () => resetAndPlayUpTo(Math.max(0, state.currentMoveIndex - 1)));
-  if (el.btnNext) el.btnNext.addEventListener('click', () => resetAndPlayUpTo(Math.min(state.parsedMoves.length, state.currentMoveIndex + 1)));
-  if (el.btnEnd) el.btnEnd.addEventListener('click', () => resetAndPlayUpTo(state.parsedMoves.length));
+  // Playback Control Buttons
+  if (el.btnStart) el.btnStart.addEventListener('click', () => goToPly(0));
+  if (el.btnPrev) el.btnPrev.addEventListener('click', () => goToPly(state.currentMoveIndex - 1));
+  if (el.btnNext) el.btnNext.addEventListener('click', () => goToPly(state.currentMoveIndex + 1));
+  if (el.btnEnd) el.btnEnd.addEventListener('click', () => goToPly(state.positions.length - 1));
+
+  // Keyboard navigation for CAD Replay (Arrow keys: Left = Prev, Right = Next)
+  window.addEventListener('keydown', (e) => {
+    if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
+    if (e.key === 'ArrowLeft') {
+      goToPly(state.currentMoveIndex - 1);
+    } else if (e.key === 'ArrowRight') {
+      goToPly(state.currentMoveIndex + 1);
+    }
+  });
 
   // Initial Load with prefilled BARTAZABLE
-  renderBoard();
   fetchChessData('BARTAZABLE');
 
 })();
